@@ -1,0 +1,23 @@
+services:
+  ffxi:
+    build: .
+    image: ffxi-server:local   # fixed name so the built image can be exported and loaded on another machine
+    container_name: ffxi-server
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 60s
+    # Host networking: the server decides which address to hand the PS2 from the machine's own
+    # network, so a container with a private 172.x address could give players an unreachable one.
+    # Ports in use on the host: TCP 54001, UDP 54240, TCP 54242, TCP 54460, web UI 8080.
+    network_mode: host
+    environment:
+      WEBUI_PASSWORD: ${WEBUI_PASSWORD:?set WEBUI_PASSWORD in .env}
+      # SERVER_NAME: "My World"       # optional: if set, it is applied at EVERY container start and overrides what you set in the UI
+      SERVER_ADDRESS: ${SERVER_ADDRESS:-}   # optional: public hostname/IP for internet players
+    volumes:
+      - ffxi-data:/ffxi/Server/data               # database, profiles, roles, chat, backups, logs
+      - ffxi-settings:/ffxi/Server/lsb/settings   # rates and rules are edited in main.lua / map.lua here
+
+volumes:
+  ffxi-data:
+  ffxi-settings:

@@ -1,0 +1,22 @@
+# Allowlist: only what the Dockerfile COPYs goes into the build. Everything else in the release
+# folder (Disc, Server App, ISOs, ...) is left out. Dot-files are easy to miss when copying, so
+# this same content is also saved as ".dockerignore" and as "Dockerfile.dockerignore".
+*
+!Server
+!entrypoint.sh
+!webui.py
+
+# machine-specific or huge things inside Server/ that must NOT end up in the image
+Server/data
+Server/lsb/build
+Server/lsb/.build-venv
+Server/lsb/.cpm-cache
+Server/lsb/log
+Server/lsb/xi_connect
+Server/lsb/xi_search
+Server/lsb/xi_world
+Server/lsb/xi_map
+Server/programs/mac
+Server/programs/mac-arm64
+Server/programs/windows
+**/__pycache__

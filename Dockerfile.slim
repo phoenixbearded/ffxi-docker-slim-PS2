@@ -1,0 +1,26 @@
+# Slim runtime image: reuses the already compiled ffxi-server:local (no 72 minute rebuild), then drops the
+# build tree, the test programs and the compilers. Build it with:
+#   docker build -f Dockerfile.slim -t ffxi-server:slim .
+FROM ffxi-server:local AS built
+USER root
+RUN rm -rf /ffxi/Server/lsb/build /ffxi/Server/lsb/.cpm-cache /ffxi/Server/lsb/xi_test /ffxi/Server/lsb/xi_profile
+
+FROM ubuntu:26.04
+ENV DEBIAN_FRONTEND=noninteractive
+# same libraries as the full image (the -dev packages pull in the runtime libraries), without compilers, cmake or git
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates curl python3 python3-venv python3-pip \
+        libluajit-5.1-dev libzmq3-dev libssl-dev zlib1g-dev libzstd-dev libdwarf-dev \
+        mariadb-server mariadb-client libmariadb-dev-compat binutils-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN userdel -r ubuntu 2>/dev/null || true \
+    && useradd -m -u 1000 -s /bin/bash ffxi \
+    && ln -sf /usr/bin/mariadb-dump /usr/sbin/mariadb-dump
+# COPY --from sees the stage's final file system, so the deleted folders above are not copied
+COPY --from=built --chown=ffxi:ffxi /ffxi /ffxi
+USER ffxi
+WORKDIR /ffxi
+RUN mkdir -p /ffxi/Server/data
+COPY --chown=ffxi:ffxi --chmod=755 entrypoint.sh /entrypoint.sh
+COPY --chown=ffxi:ffxi webui.py /webui.py
+ENTRYPOINT ["/entrypoint.sh"]

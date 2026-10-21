@@ -1,48 +1,72 @@
-To get the server up and running, you have to compile the image first before uploading:
+FFXI Server: Docker Edition
 
-# I - File Setup
+Docker packaging for the Habex FFXI PS2 private server (Server App), with a built-in web UI protected by a password.
 
-# In the main Habex folder (alongside Disc/files/Game/Server/Server App):
+Build the image once, then run it anywhere Docker runs: a NAS, a home server, or a PC.
 
-# add all these project files:
+[!NOTE] The image is built on the machine that has your Habex files, then copied to the destination host. It is not pulled from a registry.
 
-- docker compose (regular or NAS)
-- Dockerfile
-- Dockerfile.dockerignore
-- Dockerfile.slim
-- entrypoint.sh
-- webui.py
+Contents
+Requirements
 
-# I.5 - update .env file with webUI password (username is admin) and Port
+1. Add the project files
+2. Configure .env
+3. Build the image
+4. Deploy
+5. Connecting from PCSX2 / PS2
+   Screenshots
+   Known issues
+   Requirements
+   Docker and Docker Compose on both the build machine and the destination host
+   Your Habex folder, containing Disc/files/Game/Server/Server App
+6. Add the project files
 
-# II - Docker img build
+In the main Habex folder (next to Disc/files/Game/Server/Server App), add all of these files:
 
-# run the following in main folder
+File Purpose
+docker-compose.yml / docker-compose.nas.yml Compose file: use the regular one, or the NAS variant
+Dockerfile Full image definition
+Dockerfile.slim Slim image definition (used in the build below)
+Dockerfile.dockerignore Files excluded from the build context
+entrypoint.sh Container startup script
+webui.py Web UI 2. Configure .env
 
+Update the .env file with:
+
+Web UI password: the login username is admin
+Port: the port the web UI listens on 3. Build the image
+
+Run these from the main Habex folder:
+
+bash
 docker build -f Dockerfile.slim -t ffxi-server:slim .
-docker save ffxi-server:slim | gzip > ffxi-server-slim.tar.gz
+docker save ffxi-server:slim | gzip > ffxi-server-slim.tar.gz 4. Deploy
 
-# III - Bring the image up
+Copy ffxi-server-slim.tar.gz and your compose file to the destination (NAS, server, PC, etc.), then run this on that machine:
 
-# copy to destination (NAS,server,PC,etc), then on there:
+bash
+
+# Load the image
 
 sudo docker load < /volume1/docker/ffxi-server-slim.tar.gz
-cd /path/to/docker/ffxi-server && sudo docker compose -f docker-compose.nas.yml up -d
 
-# IV - good to know:
+# Start the server
 
-# Since the PCSX2 or PS2 have trouble with network modes for docker, the IP address is the one where docker is hosted when logging in, follow the same external or internal address rules that Habex project had going on, with same ports in login portal
+cd /path/to/docker/ffxi-server
+sudo docker compose -f docker-compose.nas.yml up -d
 
-# Known issues
+[!TIP] Adjust /volume1/docker/ and /path/to/docker/ffxi-server to match where you copied the files. Use docker-compose.yml instead if you're not on a NAS.
 
-# Cannot login with empty POL account with zero characters
+5. Connecting from PCSX2 / PS2
 
-# As of now, need to do a backup from POL accounts and restore over into the docker server in order for it to work. I will log it as a bug.
+PCSX2 and the PS2 have trouble with Docker network modes. When logging in, use the IP address of the machine hosting Docker.
 
-<img width="920" height="267" alt="Screenshot_20261020_154324" src="https://github.com/user-attachments/assets/1b270685-c618-494f-b67a-45aa1a8ca25a" />
-<img width="2311" height="906" alt="Screenshot_20261020_154151" src="https://github.com/user-attachments/assets/71e5e576-0c0f-41d5-a79b-fe3745e78196" />
-<img width="2307" height="890" alt="Screenshot_20261020_154131" src="https://github.com/user-attachments/assets/4b0a01e3-8224-4496-b033-3a5ac5fc0c5f" />
-<img width="2307" height="890" alt="Screenshot_20261020_154057" src="https://github.com/user-attachments/assets/d8cb24be-7a25-4425-8717-d40365138a56" />
-<img width="2307" height="890" alt="Screenshot_20261020_154025" src="https://github.com/user-attachments/assets/142730a5-cde7-4839-b16a-0efb70522d31" />
-<img width="2307" height="890" alt="Screenshot_20261020_153933" src="https://github.com/user-attachments/assets/778c6277-01d4-49d8-ad34-d673c2a1d741" />
-<img width="2229" height="831" alt="Screenshot_20261020_153828" src="https://github.com/user-attachments/assets/3062c392-69a2-4d7e-a50c-ae704f49ad46" />
+Follow the same external/internal address rules as the original Habex project, with the same ports in the login portal.
+
+Screenshots
+
+<details> <summary>Click to expand</summary> <!-- TODO: replace each alt text with a short caption describing the screenshot --> <p align="center"> <img width="800" alt="Screenshot 1" src="https://github.com/user-attachments/assets/3062c392-69a2-4d7e-a50c-ae704f49ad46" /> <img width="800" alt="Screenshot 2" src="https://github.com/user-attachments/assets/778c6277-01d4-49d8-ad34-d673c2a1d741" /> <img width="800" alt="Screenshot 3" src="https://github.com/user-attachments/assets/142730a5-cde7-4839-b16a-0efb70522d31" /> <img width="800" alt="Screenshot 4" src="https://github.com/user-attachments/assets/d8cb24be-7a25-4425-8717-d40365138a56" /> <img width="800" alt="Screenshot 5" src="https://github.com/user-attachments/assets/4b0a01e3-8224-4496-b033-3a5ac5fc0c5f" /> <img width="800" alt="Screenshot 6" src="https://github.com/user-attachments/assets/71e5e576-0c0f-41d5-a79b-fe3745e78196" /> <img width="800" alt="Screenshot 7" src="https://github.com/user-attachments/assets/1b270685-c618-494f-b67a-45aa1a8ca25a" /> </p> </details>
+Known issues
+Login fails for an empty POL account (one with zero characters).
+Workaround: back up your existing POL accounts and restore them into the Docker server.
+Tracked as a bug (link the GitHub issue here once filed).

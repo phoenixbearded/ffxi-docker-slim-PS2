@@ -1,6 +1,6 @@
 FFXI Server: Docker Edition
 
-Docker packaging for the Habex FFXI PS2 private server (Server App), with a built-in web UI protected by a password.
+A Dockerized app server for hosting your own Final Fantasy XI (PS2) worlds, using your legally owned copy of the game. Inspired by HAB3X/ffxi-2016-ps2, it wraps the Habex Server App in a container with a password-protected web UI.
 
 Build the image once, then run it anywhere Docker runs: a NAS, a home server, or a PC.
 
@@ -16,9 +16,11 @@ Requirements
 5. Connecting from PCSX2 / PS2
    Screenshots
    Known issues
+   Credits & legal
    Requirements
    Docker and Docker Compose on both the build machine and the destination host
-   Your Habex folder, containing Disc/files/Game/Server/Server App
+   A legally owned copy of FFXI for PS2
+   The Habex project files, including Disc/files/Game/Server/Server App (see HAB3X/ffxi-2016-ps2)
 6. Add the project files
 
 In the main Habex folder (next to Disc/files/Game/Server/Server App), add all of these files:
@@ -70,3 +72,7 @@ Known issues
 Login fails for an empty POL account (one with zero characters).
 Workaround: back up your existing POL accounts and restore them into the Docker server.
 Tracked as a bug (link the GitHub issue here once filed).
+Credits & legal
+Server app and game setup: HAB3X/ffxi-2016-ps2. This project only adds the Docker packaging and web UI around it.
+Game files are not included. You must supply your own legally owned copy of the game.
+Not affiliated with or endorsed by Square Enix or the Habex project.

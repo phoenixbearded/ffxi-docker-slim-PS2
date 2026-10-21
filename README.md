@@ -117,7 +117,7 @@ Follow the same external/internal address rules as the original Habex project, w
 
 - **Login fails for an empty POL account** (one with zero characters).
   - **Workaround:** back up your existing POL accounts and restore them into the Docker server.
-  - Tracked as a bug (link the GitHub issue here once filed).
+  - Tracked as a bug (https://github.com/phoenixbearded/ffxi-docker-slim-PS2/issues/1).
 
 ---
 
